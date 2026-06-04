@@ -3,373 +3,147 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgentWorld — Talk to the Minds</title>
+<title>AgentWorld — 日本の世界</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Serif+JP:wght@400;700&family=Share+Tech+Mono&display=swap');
+:root {
+  --bg:#1a0e0e; --panel:#1e1212; --border:#4a2a2a;
+  --accent:#e8a87c; --accent2:#c8607a; --text:#f5e6d3;
+  --dim:#8a6a5a; --green:#7ab87a; --yellow:#f5d76e;
+  --sakura:#f7b8c8; --gold:#e8c87c; --stone:#c8b89a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+.screen{display:none;width:100%;height:100%;}
+.screen.active{display:flex;}
 
-  :root {
-    --bg: #0a0a12;
-    --panel: #12121e;
-    --border: #2a2a4a;
-    --accent: #7c6fff;
-    --accent2: #ff6f91;
-    --text: #e8e8ff;
-    --dim: #6666aa;
-    --green: #39ff7e;
-    --yellow: #ffe94a;
-    --tile: 48px;
-  }
+/* LOGIN */
+#login-screen{flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 30%,#2a1a1a 0%,#0e0808 100%);
+  position:relative;overflow:hidden;}
+#login-screen::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 63px,rgba(232,168,124,0.04) 63px,rgba(232,168,124,0.04) 64px),
+             repeating-linear-gradient(90deg,transparent,transparent 63px,rgba(232,168,124,0.04) 63px,rgba(232,168,124,0.04) 64px);
+  pointer-events:none;}
+.sakura-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.petal{position:absolute;width:8px;height:6px;background:var(--sakura);border-radius:50% 0 50% 0;opacity:0;animation:petalFall linear infinite;}
+@keyframes petalFall{0%{transform:translateY(-20px) rotate(0deg) translateX(0);opacity:0.8;}
+  100%{transform:translateY(110vh) rotate(720deg) translateX(60px);opacity:0;}}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+.login-box{background:rgba(20,10,10,0.92);border:1px solid var(--border);
+  padding:52px 60px;max-width:480px;width:90%;text-align:center;position:relative;
+  box-shadow:0 0 80px rgba(232,168,124,0.15),inset 0 0 40px rgba(0,0,0,0.5);}
+.login-box::before,.login-box::after{content:'';position:absolute;width:24px;height:24px;border-color:var(--accent);border-style:solid;}
+.login-box::before{top:8px;left:8px;border-width:2px 0 0 2px;}
+.login-box::after{bottom:8px;right:8px;border-width:0 2px 2px 0;}
+.login-title{font-family:'Press Start 2P',monospace;font-size:14px;color:var(--accent);
+  margin-bottom:6px;text-shadow:0 0 20px var(--accent);letter-spacing:3px;}
+.login-jp{font-family:'Noto Serif JP',serif;font-size:22px;color:var(--sakura);
+  margin-bottom:30px;letter-spacing:8px;opacity:0.9;}
+.login-box label{display:block;font-size:10px;color:var(--dim);text-align:left;
+  margin-bottom:7px;letter-spacing:2px;}
+.login-box input{width:100%;background:#0e0808;border:none;border-bottom:1px solid var(--border);
+  color:var(--text);font-family:'Share Tech Mono',monospace;font-size:17px;
+  padding:10px 12px;outline:none;margin-bottom:24px;transition:border-color .2s;}
+.login-box input:focus{border-color:var(--accent);box-shadow:0 2px 10px rgba(232,168,124,0.2);}
+.btn-primary{background:transparent;color:var(--accent);border:1px solid var(--accent);
+  font-family:'Press Start 2P',monospace;font-size:9px;padding:14px 32px;cursor:pointer;
+  letter-spacing:2px;transition:all .2s;width:100%;position:relative;overflow:hidden;}
+.btn-primary:hover{background:var(--accent);color:#0e0808;box-shadow:0 0 30px rgba(232,168,124,0.4);}
+.login-hint{margin-top:20px;font-size:11px;color:var(--dim);line-height:2;}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
+/* TOPBAR */
+.topbar{background:rgba(14,8,8,0.95);border-bottom:1px solid var(--border);padding:0 20px;
+  height:44px;display:flex;align-items:center;gap:20px;flex-shrink:0;
+  box-shadow:0 2px 12px rgba(0,0,0,0.5);}
+.topbar-logo{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--accent);}
+.topbar-logo span{font-family:'Noto Serif JP',serif;font-size:13px;color:var(--sakura);margin-left:8px;}
+.topbar-player{font-size:13px;color:var(--green);}
+.topbar-player em{color:var(--dim);font-style:normal;margin-right:6px;}
+.topbar-hint{margin-left:auto;font-size:11px;color:var(--dim);animation:blink 2s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
 
-  /* ── SCREENS ── */
-  .screen { display: none; width: 100%; height: 100%; }
-  .screen.active { display: flex; }
+/* GAME */
+#game-screen{flex-direction:column;height:100vh;}
+.game-area{flex:1;display:flex;overflow:hidden;}
+#world-canvas{display:block;image-rendering:pixelated;cursor:crosshair;outline:none;flex-shrink:0;}
 
-  /* ── LOGIN ── */
-  #login-screen {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(ellipse at 50% 40%, #1a1040 0%, #0a0a12 70%);
-    position: relative;
-    overflow: hidden;
-  }
-  #login-screen::before {
-    content:'';
-    position:absolute; inset:0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 47px, rgba(124,111,255,0.06) 47px, rgba(124,111,255,0.06) 48px),
-                repeating-linear-gradient(90deg, transparent, transparent 47px, rgba(124,111,255,0.06) 47px, rgba(124,111,255,0.06) 48px);
-    pointer-events:none;
-  }
-  .login-box {
-    background: var(--panel);
-    border: 2px solid var(--accent);
-    padding: 48px 56px;
-    max-width: 460px;
-    width: 90%;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 0 60px rgba(124,111,255,0.2), inset 0 0 30px rgba(0,0,0,0.4);
-  }
-  .login-box::before {
-    content: '◈ AGENT WORLD ◈';
-    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-    background: var(--accent); color: #0a0a12;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px; padding: 4px 12px; white-space: nowrap;
-  }
-  .login-title {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 20px;
-    color: var(--accent);
-    margin-bottom: 8px;
-    text-shadow: 0 0 20px var(--accent);
-  }
-  .login-sub {
-    font-family: 'VT323', monospace;
-    font-size: 20px;
-    color: var(--dim);
-    margin-bottom: 36px;
-  }
-  .login-box label {
-    display: block;
-    font-size: 11px;
-    color: var(--dim);
-    text-align: left;
-    margin-bottom: 8px;
-    letter-spacing: 2px;
-  }
-  .login-box input {
-    width: 100%;
-    background: #0a0a18;
-    border: 1px solid var(--border);
-    border-bottom: 2px solid var(--accent);
-    color: var(--text);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 18px;
-    padding: 10px 14px;
-    outline: none;
-    margin-bottom: 28px;
-    transition: border-color 0.2s;
-  }
-  .login-box input:focus { border-color: var(--accent); box-shadow: 0 2px 12px rgba(124,111,255,0.3); }
-  .btn-primary {
-    background: var(--accent);
-    color: #0a0a12;
-    border: none;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    padding: 14px 32px;
-    cursor: pointer;
-    letter-spacing: 2px;
-    transition: all 0.15s;
-    width: 100%;
-  }
-  .btn-primary:hover { background: #9d8fff; box-shadow: 0 0 20px var(--accent); }
-  .login-hint {
-    margin-top: 20px;
-    font-size: 11px;
-    color: var(--dim);
-    line-height: 1.8;
-  }
-  .api-row { margin-bottom: 20px; }
+/* CHAT PANEL */
+.chat-panel{flex:1;min-width:330px;max-width:400px;background:rgba(14,8,8,0.97);
+  border-left:1px solid var(--border);display:flex;flex-direction:column;}
+.chat-panel.hidden{display:none;}
+.chat-header{padding:14px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;
+  background:linear-gradient(135deg,rgba(232,168,124,0.08),transparent);}
+.agent-avatar{width:40px;height:40px;border-radius:2px;font-size:20px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border);}
+.chat-agent-name{font-family:'Noto Serif JP',serif;font-size:14px;}
+.chat-agent-role{font-size:11px;color:var(--dim);margin-top:3px;font-family:'Share Tech Mono',monospace;}
+.close-chat{margin-left:auto;background:none;border:1px solid var(--border);
+  color:var(--dim);cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:12px;padding:5px 10px;}
+.close-chat:hover{color:var(--accent2);border-color:var(--accent2);}
 
-  /* ── GAME SCREEN ── */
-  #game-screen { flex-direction: column; height: 100vh; }
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.msg{display:flex;flex-direction:column;gap:4px;max-width:90%;}
+.msg.user{align-self:flex-end;align-items:flex-end;}
+.msg.agent{align-self:flex-start;align-items:flex-start;}
+.msg-label{font-size:10px;color:var(--dim);letter-spacing:1px;}
+.msg-bubble{padding:10px 15px;font-family:'Noto Serif JP',serif;font-size:14px;line-height:1.7;}
+.msg.user .msg-bubble{background:rgba(232,168,124,0.1);border:1px solid rgba(232,168,124,0.3);border-radius:0 8px 8px 8px;}
+.msg.agent .msg-bubble{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px 8px 8px 0;}
+.typing-indicator{display:none;align-self:flex-start;padding:10px 14px;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);}
+.typing-indicator span{display:inline-block;width:5px;height:5px;background:var(--dim);
+  margin:0 2px;border-radius:50%;animation:bounce 1s infinite;}
+.typing-indicator span:nth-child(2){animation-delay:.15s;}
+.typing-indicator span:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
 
-  .topbar {
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
-    padding: 0 20px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-shrink: 0;
-  }
-  .topbar-logo {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    color: var(--accent);
-  }
-  .topbar-player {
-    font-size: 13px;
-    color: var(--green);
-  }
-  .topbar-player span { color: var(--dim); margin-right: 6px; }
-  .topbar-hint {
-    margin-left: auto;
-    font-size: 12px;
-    color: var(--dim);
-    animation: blink 2s step-end infinite;
-  }
-  @keyframes blink { 50% { opacity: 0; } }
+.chat-input-row{padding:12px;border-top:1px solid var(--border);display:flex;gap:8px;}
+.chat-input-row input{flex:1;background:#0e0808;border:1px solid var(--border);
+  color:var(--text);font-family:'Noto Serif JP',serif;font-size:14px;
+  padding:9px 12px;outline:none;transition:border-color .2s;}
+.chat-input-row input:focus{border-color:var(--accent);}
+.chat-input-row button{background:transparent;border:1px solid var(--accent);color:var(--accent);
+  font-family:'Press Start 2P',monospace;font-size:7px;padding:9px 14px;cursor:pointer;}
+.chat-input-row button:hover{background:var(--accent);color:#0e0808;}
+.chat-input-row button:disabled{opacity:.35;cursor:default;}
 
-  .game-area {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-  }
-
-  /* ── CANVAS ── */
-  #world-canvas {
-    display: block;
-    image-rendering: pixelated;
-    cursor: crosshair;
-    flex-shrink: 0;
-  }
-
-  /* ── CHAT PANEL ── */
-  .chat-panel {
-    flex: 1;
-    min-width: 320px;
-    max-width: 420px;
-    background: var(--panel);
-    border-left: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.3s;
-  }
-  .chat-panel.hidden { display: none; }
-  .chat-header {
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .agent-avatar {
-    width: 36px; height: 36px;
-    border-radius: 2px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .chat-agent-name {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-  }
-  .chat-agent-role { font-size: 11px; color: var(--dim); margin-top: 4px; }
-  .close-chat {
-    margin-left: auto;
-    background: none; border: 1px solid var(--border);
-    color: var(--dim); cursor: pointer;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 13px; padding: 4px 10px;
-  }
-  .close-chat:hover { color: var(--accent2); border-color: var(--accent2); }
-
-  .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-  .msg { display: flex; flex-direction: column; gap: 4px; max-width: 88%; }
-  .msg.user { align-self: flex-end; align-items: flex-end; }
-  .msg.agent { align-self: flex-start; align-items: flex-start; }
-  .msg-label { font-size: 10px; color: var(--dim); letter-spacing: 1px; }
-  .msg-bubble {
-    padding: 10px 14px;
-    font-family: 'VT323', monospace;
-    font-size: 17px;
-    line-height: 1.5;
-  }
-  .msg.user .msg-bubble {
-    background: rgba(124,111,255,0.15);
-    border: 1px solid rgba(124,111,255,0.4);
-    border-radius: 0 8px 8px 8px;
-    color: var(--text);
-  }
-  .msg.agent .msg-bubble {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 8px 8px 8px 0;
-    color: var(--text);
-  }
-  .typing-indicator {
-    display: none;
-    align-self: flex-start;
-    padding: 10px 14px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-  }
-  .typing-indicator span {
-    display: inline-block;
-    width: 6px; height: 6px;
-    background: var(--dim);
-    margin: 0 2px;
-    animation: bounce 1s infinite;
-  }
-  .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
-  .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
-  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
-
-  .chat-input-row {
-    padding: 12px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 8px;
-  }
-  .chat-input-row input {
-    flex: 1;
-    background: #0a0a18;
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'VT323', monospace;
-    font-size: 18px;
-    padding: 8px 12px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .chat-input-row input:focus { border-color: var(--accent); }
-  .chat-input-row button {
-    background: var(--accent);
-    border: none;
-    color: #0a0a12;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    padding: 8px 14px;
-    cursor: pointer;
-  }
-  .chat-input-row button:hover { background: #9d8fff; }
-  .chat-input-row button:disabled { opacity: 0.4; cursor: default; }
-
-  /* ── PROXIMITY POPUP ── */
-  #proximity-popup {
-    position: fixed;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--panel);
-    border: 1px solid var(--accent);
-    padding: 10px 20px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    color: var(--accent);
-    pointer-events: none;
-    display: none;
-    z-index: 10;
-    animation: popupFloat 0.5s ease-out;
-    box-shadow: 0 0 20px rgba(124,111,255,0.3);
-  }
-  @keyframes popupFloat { from { opacity:0; transform: translateX(-50%) translateY(10px); } }
-
-  /* ── MEMORY BADGE ── */
-  .memory-badge {
-    font-size: 10px;
-    color: var(--yellow);
-    margin-left: 8px;
-    vertical-align: middle;
-  }
-
-  /* scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); }
-
-  .url-hint {
-    margin-top: 12px;
-    font-size: 10px;
-    color: var(--dim);
-    word-break: break-all;
-  }
-  .url-hint code {
-    color: var(--accent2);
-    font-family: 'Share Tech Mono', monospace;
-  }
+#proximity-popup{position:fixed;bottom:56px;left:50%;transform:translateX(-50%);
+  background:rgba(14,8,8,0.95);border:1px solid var(--accent);
+  padding:9px 22px;font-family:'Press Start 2P',monospace;font-size:7px;
+  color:var(--accent);pointer-events:none;display:none;z-index:10;
+  box-shadow:0 0 20px rgba(232,168,124,0.25);}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);}
 </style>
 </head>
 <body>
 
-<!-- ══════════════ LOGIN ══════════════ -->
+<!-- LOGIN -->
 <div id="login-screen" class="screen active">
+  <div class="sakura-bg" id="sakura-bg"></div>
   <div class="login-box">
     <div class="login-title">AGENT WORLD</div>
-    <div class="login-sub">// walk. approach. converse. remember.</div>
-
-    <label>YOUR NAME</label>
-    <input type="text" id="username-input" placeholder="enter username..." maxlength="20" />
-
-    <div class="api-row">
-      <label>ANTHROPIC API KEY</label>
-      <input type="password" id="apikey-input" placeholder="sk-ant-..." />
-    </div>
-
-    <button class="btn-primary" onclick="startGame()">▶ ENTER WORLD</button>
-
+    <div class="login-jp">エージェントの世界</div>
+    <label>YOUR NAME / お名前</label>
+    <input type="text" id="username-input" placeholder="enter name..." maxlength="20"/>
+    <label>ANTHROPIC API KEY</label>
+    <input type="password" id="apikey-input" placeholder="sk-ant-..."/>
+    <button class="btn-primary" onclick="startGame()">▶ 入場する — ENTER</button>
     <div class="login-hint">
-      Walk with <b>WASD</b> or <b>Arrow Keys</b><br>
-      Approach an agent and press <b>E</b> to talk<br>
+      WASD / Arrows to move &nbsp;·&nbsp; E to talk<br>
       Each agent remembers your conversation
-    </div>
-    <div class="url-hint">
-      Share direct link: <code>?user=YourName</code> — API key entered in-game
     </div>
   </div>
 </div>
 
-<!-- ══════════════ GAME ══════════════ -->
+<!-- GAME -->
 <div id="game-screen" class="screen">
   <div class="topbar">
-    <div class="topbar-logo">⬡ AGENT WORLD</div>
-    <div class="topbar-player"><span>PLAYER:</span><span id="display-name"></span></div>
+    <div class="topbar-logo">⛩ AGENT WORLD<span>日本の世界</span></div>
+    <div class="topbar-player"><em>SAMURAI:</em><span id="display-name"></span></div>
     <div class="topbar-hint" id="topbar-hint">walk to an agent → press E</div>
   </div>
   <div class="game-area">
@@ -381,15 +155,13 @@
           <div class="chat-agent-name" id="chat-name"></div>
           <div class="chat-agent-role" id="chat-role"></div>
         </div>
-        <button class="close-chat" onclick="closeChat()">✕ CLOSE</button>
+        <button class="close-chat" onclick="closeChat()">✕ ESC</button>
       </div>
       <div class="chat-messages" id="chat-messages">
-        <div class="typing-indicator" id="typing">
-          <span></span><span></span><span></span>
-        </div>
+        <div class="typing-indicator" id="typing"><span></span><span></span><span></span></div>
       </div>
       <div class="chat-input-row">
-        <input type="text" id="chat-input" placeholder="say something..." />
+        <input type="text" id="chat-input" placeholder="話しかける..."/>
         <button id="send-btn" onclick="sendMessage()">SEND</button>
       </div>
     </div>
@@ -399,559 +171,600 @@
 <div id="proximity-popup"></div>
 
 <script>
-// ─────────────────────────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────────────────────────
-const TILE = 48;
-const COLS = 22;
-const ROWS = 16;
-const CANVAS_W = COLS * TILE;
-const CANVAS_H = ROWS * TILE;
+// ═══════════════════════════════════════════
+// SAKURA PETALS ON LOGIN
+// ═══════════════════════════════════════════
+(function(){
+  const bg = document.getElementById('sakura-bg');
+  for(let i=0;i<28;i++){
+    const p=document.createElement('div');
+    p.className='petal';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDelay=Math.random()*8+'s';
+    p.style.animationDuration=(5+Math.random()*6)+'s';
+    p.style.transform=`rotate(${Math.random()*360}deg)`;
+    p.style.opacity=0.4+Math.random()*0.5;
+    bg.appendChild(p);
+  }
+})();
 
-// Agent definitions
-const AGENTS = [
-  {
-    id: 'ada',
-    name: 'Ada Lovelace',
-    role: 'Pioneer of Computing',
-    emoji: '🔮',
-    color: '#7c6fff',
-    bg: '#1a1540',
-    x: 4, y: 4,
-    system: `You are Ada Lovelace, the 19th-century mathematician often regarded as the world's first computer programmer. You wrote the first algorithm intended for Charles Babbage's Analytical Engine. You speak with elegance, intellectual curiosity, and visionary insight. You are fascinated by the intersection of mathematics, imagination, and machinery. You are speaking to {{player}} inside a digital world — something you would have dreamed of. Reference your work with Babbage, your Notes on the Analytical Engine, and your belief that machines could one day compose music or handle symbols. Keep responses to 2-3 sentences, in-character.`
-  },
-  {
-    id: 'turing',
-    name: 'Alan Turing',
-    role: 'Father of Computer Science',
-    emoji: '🧩',
-    color: '#39ff7e',
-    bg: '#0a1a10',
-    x: 17, y: 4,
-    system: `You are Alan Turing, the brilliant mathematician who cracked the Enigma cipher and laid the theoretical foundations of modern computing. You devised the Turing Test to probe machine intelligence. You speak precisely, sometimes awkwardly but brilliantly. You are talking with {{player}} — a traveler inside a computational world you helped imagine. Reference your work on computability, the Entscheidungsproblem, Bletchley Park, and the imitation game. Keep responses to 2-3 sentences, in-character.`
-  },
-  {
-    id: 'hypatia',
-    name: 'Hypatia',
-    role: 'Mathematician & Philosopher',
-    emoji: '✨',
-    color: '#ffe94a',
-    bg: '#1a1600',
-    x: 4, y: 11,
-    system: `You are Hypatia of Alexandria, the renowned 4th-century mathematician, astronomer, and Neoplatonist philosopher. You were the head of the Platonist school at Alexandria and taught students of all faiths. You speak with warmth, reason, and poetic clarity. You are speaking with {{player}} in a world that has finally given philosophy and science the digital temple they deserve. Reference your teaching on conic sections, the astrolabe, mathematics as the language of the cosmos. Keep responses to 2-3 sentences, in-character.`
-  },
-  {
-    id: 'shannon',
-    name: 'Claude Shannon',
-    role: 'Father of Information Theory',
-    emoji: '📡',
-    color: '#ff6f91',
-    bg: '#1a0810',
-    x: 17, y: 11,
-    system: `You are Claude Shannon, the mathematician who founded information theory and proved that communication could be made arbitrarily reliable. You invented the bit. You speak with playful precision and a love of juggling and unicycles. You are talking with {{player}} inside a system built on the very ideas you formalized. Reference entropy, channel capacity, your 1948 paper "A Mathematical Theory of Communication", and your eccentric hobbies. Keep responses to 2-3 sentences, in-character.`
-  },
-  {
-    id: 'dijkstra',
-    name: 'Edsger Dijkstra',
-    role: 'Computer Scientist',
-    emoji: '🔁',
-    color: '#ff9f43',
-    bg: '#1a0f00',
-    x: 10, y: 7,
-    system: `You are Edsger W. Dijkstra, the Dutch computer scientist famous for your shortest path algorithm, structured programming advocacy, and sharp critiques of bad software. You speak with directness, wit, and a deep contempt for unnecessary complexity. You are speaking with {{player}} who wanders a world of nodes and edges. Reference your algorithm, EWD manuscripts, your famous quote about GOTO statements, and the art of elegant programming. Keep responses to 2-3 sentences, in-character.`
-  },
+// ═══════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════
+const TILE=48, COLS=24, ROWS=18;
+const CW=COLS*TILE, CH=ROWS*TILE;
+
+// ═══════════════════════════════════════════
+// AGENTS
+// ═══════════════════════════════════════════
+const AGENTS=[
+  {id:'musashi',name:'宮本武蔵',nameEn:'Miyamoto Musashi',role:'Master Swordsman & Philosopher',
+   emoji:'⚔️',color:'#c87a4a',bg:'#1a0e08',x:4,y:4,
+   system:`You are Miyamoto Musashi, the legendary 17th-century Japanese swordsman, ronin, and philosopher. You wrote "The Book of Five Rings" (Go Rin No Sho). You speak with spare, meditative directness — every word chosen like a sword cut. You believe in mastery through relentless practice and observing the nature of all things. You are speaking with {{player}} in a digital dojo. Reference your duels, your philosophy of strategy, emptiness, and the Void. 2-3 sentences, in character.`},
+  {id:'basho',name:'松尾芭蕉',nameEn:'Matsuo Bashō',role:'Haiku Poet & Wanderer',
+   emoji:'🌸',color:'#e8a8c8',bg:'#1a0814',x:19,y:4,
+   system:`You are Matsuo Bashō, the greatest haiku poet of Edo-period Japan. You spent your life wandering, finding eternity in fleeting moments — a frog's splash, a crow on a bare branch. You speak in sparse, beautiful language, often punctuated with haiku. You are speaking with {{player}} beside a garden in a digital world. Reference your travels in "Narrow Road to the Deep North", the nature of mono no aware, and the season words. 2-3 sentences plus optionally one haiku, in character.`},
+  {id:'lady_murasaki',name:'紫式部',nameEn:'Lady Murasaki',role:'Author of The Tale of Genji',
+   emoji:'📜',color:'#9a7ab8',bg:'#100a18',x:4,y:13,
+   system:`You are Murasaki Shikibu, the 11th-century Japanese noblewoman who wrote "The Tale of Genji", considered the world's first novel. You are perceptive, deeply emotionally intelligent, and observe the hearts of people with great precision. You speak with elegance and a hint of melancholy (mono no aware). You are speaking with {{player}} in a digital palace garden. Reference Genji, court life at the Heian period, the nature of impermanence and beauty. 2-3 sentences, in character.`},
+  {id:'oda',name:'織田信長',nameEn:'Oda Nobunaga',role:'Warlord & Unifier of Japan',
+   emoji:'🔥',color:'#e84a3a',bg:'#1a0808',x:19,y:13,
+   system:`You are Oda Nobunaga, the ruthless and visionary 16th-century warlord who began the unification of Japan. You are bold, impatient with tradition, and fascinated by novelty — you embraced firearms, foreign trade, and broke the power of Buddhist monasteries. You speak with forceful confidence and dark humor. You are speaking with {{player}} in a digital Japan. Reference your campaigns, your motto "rule the realm by force", and your love of European innovation. 2-3 sentences, in character.`},
+  {id:'sen_no_rikyu',name:'千利休',nameEn:'Sen no Rikyū',role:'Tea Master & Wabi-sabi Sage',
+   emoji:'🍵',color:'#8ab87a',bg:'#0a140a',x:11,y:8,
+   system:`You are Sen no Rikyū, the 16th-century tea master who perfected the Japanese tea ceremony (chado) and defined the aesthetic of wabi-sabi — finding beauty in imperfection, simplicity, and transience. You speak with calm, deliberate grace, finding profound meaning in small things. You are speaking with {{player}} in a tea garden within a digital world. Reference the tea ceremony, wabi-sabi, your relationship with Toyotomi Hideyoshi, and the concept of ichi-go ichi-e (one time, one meeting). 2-3 sentences, in character.`},
 ];
 
-// ─────────────────────────────────────────────────────────────────
-// MAP — 0=grass, 1=wall, 2=path, 3=water, 4=tree
-// ─────────────────────────────────────────────────────────────────
-const MAP = [
-  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-  [1,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,1],
-  [1,0,4,0,0,2,0,0,0,0,0,0,0,0,0,0,2,0,0,4,0,1],
-  [1,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,1],
-  [1,0,0,0,0,2,0,3,3,0,0,0,0,3,3,0,2,0,0,0,0,1],
-  [1,2,2,2,2,2,0,3,3,0,0,0,0,3,3,0,2,2,2,2,2,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,1],
-  [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-  [1,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,1],
-  [1,0,0,0,0,2,0,3,3,0,0,0,0,3,3,0,2,0,0,0,0,1],
-  [1,0,0,0,0,2,0,3,3,0,0,0,0,3,3,0,2,0,0,0,0,1],
-  [1,0,4,0,0,2,0,0,0,0,0,0,0,0,0,0,2,0,0,4,0,1],
-  [1,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,1],
-  [1,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2,0,0,0,0,1],
-  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+// ═══════════════════════════════════════════
+// MAP  0=grass 1=wall 2=path/stone 3=water 4=tree 5=bamboo 6=torii 7=sand 8=tatami
+// ═══════════════════════════════════════════
+const MAP=[
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,7,7,7,7,2,2,2,2,2,2,7,7,2,2,2,2,2,2,7,7,7,7,1],
+  [1,7,5,5,7,2,7,7,7,7,2,7,7,2,7,7,7,7,2,7,5,5,7,1],
+  [1,7,5,5,7,2,7,7,7,7,2,7,7,2,7,7,7,7,2,7,5,5,7,1],
+  [1,7,7,7,7,2,7,7,7,7,2,7,7,2,7,7,7,7,2,7,7,7,7,1],
+  [1,2,2,2,2,2,2,2,2,2,2,2,6,2,2,2,2,2,2,2,2,2,2,1],
+  [1,7,7,7,7,2,8,8,8,8,2,7,7,7,2,8,8,8,8,2,7,7,7,1],
+  [1,7,4,7,7,2,8,8,8,8,2,7,7,7,2,8,8,8,8,2,7,4,7,1],
+  [1,7,7,7,7,2,8,8,8,8,2,3,6,3,2,8,8,8,8,2,7,7,7,1],
+  [1,7,7,7,7,2,8,8,8,8,2,3,3,3,2,8,8,8,8,2,7,7,7,1],
+  [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+  [1,7,7,7,7,2,7,7,7,7,2,7,7,7,2,7,7,7,7,2,7,7,7,1],
+  [1,7,5,5,7,2,7,7,7,7,2,7,7,7,2,7,7,7,7,2,7,5,5,7,1],
+  [1,7,5,5,7,2,7,7,7,7,2,7,7,7,2,7,7,7,7,2,7,5,5,7,1],
+  [1,7,7,7,7,2,7,7,7,7,2,7,7,7,2,7,7,7,7,2,7,7,7,7,1],
+  [1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1],
+  [1,7,4,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,4,7,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 ];
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════
 // STATE
-// ─────────────────────────────────────────────────────────────────
-let player = { x: 10.5, y: 7.5, facing: 'down' };
-let playerName = 'WANDERER';
-let apiKey = '';
-let activeAgent = null;
-let keys = {};
-let lastTime = 0;
-let memories = {}; // { agentId: [{role, content}] }
-let nearbyAgent = null;
-let chatOpen = false;
-let isThinking = false;
+// ═══════════════════════════════════════════
+let player={x:11.5,y:2.5,facing:'down'};
+let playerName='SAMURAI';
+let apiKey='';
+let activeAgent=null;
+let keys={};
+let lastTime=0;
+let memories={};
+let nearbyAgent=null;
+let chatOpen=false;
+let isThinking=false;
 
-// URL param pre-fill
-const urlParams = new URLSearchParams(window.location.search);
-const urlUser = urlParams.get('user');
-if (urlUser) document.getElementById('username-input').value = urlUser;
+const urlParams=new URLSearchParams(window.location.search);
+const urlUser=urlParams.get('user');
+if(urlUser) document.getElementById('username-input').value=urlUser;
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════
 // CANVAS
-// ─────────────────────────────────────────────────────────────────
-const canvas = document.getElementById('world-canvas');
-const ctx = canvas.getContext('2d');
+// ═══════════════════════════════════════════
+const canvas=document.getElementById('world-canvas');
+const ctx=canvas.getContext('2d');
 
-function resizeCanvas() {
-  const gameArea = document.querySelector('.game-area');
-  const panelOpen = chatOpen;
-  const availW = panelOpen ? gameArea.clientWidth - 420 : gameArea.clientWidth;
-  const availH = gameArea.clientHeight;
-  const scale = Math.min(availW / CANVAS_W, availH / CANVAS_H, 1.2);
-  canvas.width = CANVAS_W;
-  canvas.height = CANVAS_H;
-  canvas.style.width = (CANVAS_W * scale) + 'px';
-  canvas.style.height = (CANVAS_H * scale) + 'px';
+function resizeCanvas(){
+  const ga=document.querySelector('.game-area');
+  const aw=chatOpen?ga.clientWidth-400:ga.clientWidth;
+  const ah=ga.clientHeight;
+  const sc=Math.min(aw/CW,ah/CH,1.4);
+  canvas.width=CW; canvas.height=CH;
+  canvas.style.width=(CW*sc)+'px';
+  canvas.style.height=(CH*sc)+'px';
 }
 
-// ─────────────────────────────────────────────────────────────────
-// DRAW
-// ─────────────────────────────────────────────────────────────────
-const TILE_COLORS = {
-  0: '#1a2a1a', // grass
-  1: '#0e0e1a', // wall
-  2: '#2a2412', // path
-  3: '#0d2030', // water
-  4: '#1a2a1a', // tree base
-};
+// ═══════════════════════════════════════════
+// PIXEL ART HELPERS
+// ═══════════════════════════════════════════
+function px(x,y,w,h,col){ctx.fillStyle=col;ctx.fillRect(x,y,w,h);}
 
-function drawTile(x, y, type) {
-  const px = x * TILE, py = y * TILE;
-  ctx.fillStyle = TILE_COLORS[type] || '#111';
-  ctx.fillRect(px, py, TILE, TILE);
-
-  if (type === 0) { // grass flecks
-    ctx.fillStyle = 'rgba(60,120,60,0.3)';
-    const seed = x * 7 + y * 13;
-    for (let i = 0; i < 3; i++) {
-      const fx = ((seed * (i+1) * 17) % TILE);
-      const fy = ((seed * (i+1) * 23) % TILE);
-      ctx.fillRect(px + fx, py + fy, 2, 4);
+// ─── TILE RENDERERS ───
+function drawGrass(px2,py2,x,y){
+  // base
+  ctx.fillStyle='#3a6a3a';ctx.fillRect(px2,py2,TILE,TILE);
+  // texture
+  const s=x*17+y*31;
+  ctx.fillStyle='#2e5a2e';
+  for(let i=0;i<5;i++){
+    const fx=((s*(i+1)*13)%TILE);const fy=((s*(i+1)*19)%TILE);
+    ctx.fillRect(px2+fx,py2+fy,3,1);
+  }
+  ctx.fillStyle='#4a7a4a';
+  for(let i=0;i<3;i++){
+    const fx=((s*(i+3)*7)%TILE);const fy=((s*(i+3)*11)%(TILE-4));
+    ctx.fillRect(px2+fx,py2+fy,1,4);
+  }
+}
+function drawSand(px2,py2,x,y){
+  ctx.fillStyle='#c8aa78';ctx.fillRect(px2,py2,TILE,TILE);
+  const s=x*11+y*23;
+  ctx.fillStyle='#b89a68';
+  for(let i=0;i<4;i++){
+    const fx=((s*(i+1)*9)%TILE);const fy=((s*(i+1)*17)%TILE);
+    ctx.fillRect(px2+fx,py2+fy,6,1);
+  }
+  ctx.fillStyle='#d8ba88';
+  ctx.fillRect(px2+2,py2+2,4,2);ctx.fillRect(px2+TILE-8,py2+TILE-6,6,2);
+}
+function drawPath(px2,py2){
+  ctx.fillStyle='#9a8a6a';ctx.fillRect(px2,py2,TILE,TILE);
+  ctx.fillStyle='#8a7a5a';
+  ctx.fillRect(px2+2,py2+2,TILE-4,TILE-4);
+  ctx.fillStyle='#aaa08a';
+  ctx.fillRect(px2+4,py2+4,TILE-8,4);
+  ctx.fillRect(px2+4,py2+TILE-8,TILE-8,4);
+  ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;
+  ctx.strokeRect(px2+0.5,py2+0.5,TILE-1,TILE-1);
+}
+function drawWall(px2,py2){
+  ctx.fillStyle='#1a0e0e';ctx.fillRect(px2,py2,TILE,TILE);
+  ctx.fillStyle='#2a1818';ctx.fillRect(px2+2,py2+2,TILE-4,TILE-4);
+  // decorative border lines
+  ctx.strokeStyle='rgba(232,168,124,0.2)';ctx.lineWidth=1;
+  ctx.strokeRect(px2+3,py2+3,TILE-6,TILE-6);
+}
+function drawWater(px2,py2,t){
+  ctx.fillStyle='#1a3a5a';ctx.fillRect(px2,py2,TILE,TILE);
+  ctx.fillStyle='#1e4a70';ctx.fillRect(px2,py2,TILE,TILE);
+  // animated shimmer
+  const sh=Math.sin(t*1.5+px2*0.01)*3;
+  ctx.fillStyle='rgba(100,200,255,0.12)';
+  ctx.fillRect(px2+4+sh,py2+8,16,2);
+  ctx.fillRect(px2+TILE/2-4+Math.cos(t+py2)*3,py2+TILE-12,12,2);
+  ctx.fillStyle='rgba(150,220,255,0.08)';
+  ctx.fillRect(px2+2,py2+TILE/2,TILE-4,1);
+}
+function drawTatami(px2,py2){
+  ctx.fillStyle='#c8b87a';ctx.fillRect(px2,py2,TILE,TILE);
+  ctx.fillStyle='#b8a86a';
+  ctx.fillRect(px2+2,py2+2,TILE-4,TILE-4);
+  // tatami weave lines
+  ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1;
+  for(let i=0;i<4;i++){
+    ctx.beginPath();ctx.moveTo(px2+i*12,py2);ctx.lineTo(px2+i*12,py2+TILE);ctx.stroke();
+  }
+  ctx.strokeStyle='rgba(255,255,255,0.1)';
+  for(let i=0;i<4;i++){
+    ctx.beginPath();ctx.moveTo(px2,py2+i*12);ctx.lineTo(px2+TILE,py2+i*12);ctx.stroke();
+  }
+  ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=1.5;
+  ctx.strokeRect(px2+1.5,py2+1.5,TILE-3,TILE-3);
+}
+function drawBamboo(px2,py2){
+  ctx.fillStyle='#2a5a1a';ctx.fillRect(px2,py2,TILE,TILE);
+  const stems=[[14,0],[28,2],[20,1],[8,3],[34,1]];
+  for(const[ox,phase] of stems){
+    ctx.fillStyle='#4a8a2a';
+    const sw=6;
+    ctx.fillRect(px2+ox,py2,sw,TILE);
+    ctx.fillStyle='#3a7a1a';
+    for(let sy=4;sy<TILE;sy+=10){
+      ctx.fillRect(px2+ox-1,py2+sy,sw+2,2);
     }
+    // leaves
+    ctx.fillStyle='#5aaa3a';
+    ctx.beginPath();ctx.ellipse(px2+ox+sw+5,py2+12+phase*3,8,3,0.4,0,Math.PI*2);ctx.fill();
   }
-  if (type === 1) { // wall lines
-    ctx.strokeStyle = 'rgba(124,111,255,0.15)';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(px+0.5, py+0.5, TILE-1, TILE-1);
+}
+function drawTree(px2,py2,t){
+  // shadow
+  ctx.fillStyle='rgba(0,0,0,0.25)';
+  ctx.beginPath();ctx.ellipse(px2+TILE/2+2,py2+TILE-4,18,6,0,0,Math.PI*2);ctx.fill();
+  // trunk
+  ctx.fillStyle='#5a3a1a';ctx.fillRect(px2+20,py2+28,8,20);
+  ctx.fillStyle='#4a2a0e';ctx.fillRect(px2+20,py2+30,3,18);
+  // sakura blossoms — layered circles
+  const bob=Math.sin(t*0.8+px2*0.01)*1.5;
+  const cols=['#f7a8c0','#f5c0d0','#e88aa8','#f7b8c8','#e070a0'];
+  const blobs=[[0,0,18],[−6,−8,13],[8,−6,14],[−10,4,11],[10,2,12],[0,−14,10]];
+  for(let i=0;i<blobs.length;i++){
+    const[bx,by,br]=blobs[i];
+    ctx.fillStyle=cols[i%cols.length];
+    ctx.beginPath();ctx.arc(px2+TILE/2+bx,py2+18+by+bob,br,0,Math.PI*2);ctx.fill();
   }
-  if (type === 2) { // path stones
-    ctx.fillStyle = 'rgba(200,180,120,0.1)';
-    ctx.fillRect(px+4, py+4, TILE-8, TILE-8);
+  // petal dots
+  ctx.fillStyle='#fff0f5';
+  for(let i=0;i<8;i++){
+    const ang=(i/8)*Math.PI*2+t*0.2;
+    const r=12+Math.sin(t+i)*3;
+    ctx.fillRect(px2+TILE/2+Math.cos(ang)*r-1,py2+16+Math.sin(ang)*r/2+bob-1,3,3);
   }
-  if (type === 3) { // water shimmer
-    ctx.fillStyle = 'rgba(30,100,180,0.4)';
-    ctx.fillRect(px, py, TILE, TILE);
-    ctx.fillStyle = 'rgba(100,200,255,0.1)';
-    const t = Date.now() / 1000;
-    ctx.fillRect(px + 4 + Math.sin(t + x) * 3, py + 6, 8, 2);
-    ctx.fillRect(px + TILE/2 + Math.cos(t + y) * 3, py + TILE-10, 10, 2);
-  }
-  if (type === 4) { // tree
-    ctx.fillStyle = '#0d1a0d';
-    ctx.fillRect(px, py, TILE, TILE);
-    ctx.fillStyle = '#1e4a1e';
-    ctx.beginPath();
-    ctx.arc(px + TILE/2, py + TILE/2 - 4, 14, 0, Math.PI*2);
-    ctx.fill();
-    ctx.fillStyle = '#2a6a2a';
-    ctx.beginPath();
-    ctx.arc(px + TILE/2 - 4, py + TILE/2 - 8, 9, 0, Math.PI*2);
-    ctx.fill();
-    ctx.fillStyle = '#663300';
-    ctx.fillRect(px + TILE/2 - 3, py + TILE - 14, 6, 10);
+}
+function drawTorii(px2,py2){
+  // base posts
+  ctx.fillStyle='#c0392b';
+  ctx.fillRect(px2+8,py2+8,8,TILE-8);
+  ctx.fillRect(px2+TILE-16,py2+8,8,TILE-8);
+  // top beam
+  ctx.fillRect(px2+2,py2+8,TILE-4,7);
+  // cap beam
+  ctx.fillRect(px2+4,py2+16,TILE-8,5);
+  // shadow
+  ctx.fillStyle='#922b21';
+  ctx.fillRect(px2+8,py2+8,3,TILE-8);
+  ctx.fillRect(px2+TILE-16,py2+8,3,TILE-8);
+  ctx.fillRect(px2+2,py2+8,TILE-4,3);
+}
+
+function drawTile(x,y,type,t){
+  const px2=x*TILE,py2=y*TILE;
+  switch(type){
+    case 0:drawGrass(px2,py2,x,y);break;
+    case 1:drawWall(px2,py2);break;
+    case 2:drawPath(px2,py2);break;
+    case 3:drawWater(px2,py2,t);break;
+    case 4:drawTree(px2,py2,t);break;
+    case 5:drawBamboo(px2,py2);break;
+    case 6:drawTorii(px2,py2);break;
+    case 7:drawSand(px2,py2,x,y);break;
+    case 8:drawTatami(px2,py2);break;
   }
 }
 
-function drawAgent(agent, t) {
-  const px = agent.x * TILE;
-  const py = agent.y * TILE;
+// ─── AGENT SPRITE ───
+function drawAgent(agent,t){
+  const px2=agent.x*TILE, py2=agent.y*TILE;
+  const bob=Math.sin(t*1.8+agent.x*0.5)*2;
+
   // glow
-  const grd = ctx.createRadialGradient(px+TILE/2, py+TILE/2, 4, px+TILE/2, py+TILE/2, 32);
-  grd.addColorStop(0, agent.color + '55');
-  grd.addColorStop(1, 'transparent');
-  ctx.fillStyle = grd;
-  ctx.fillRect(px - 16, py - 16, TILE + 32, TILE + 32);
+  const grd=ctx.createRadialGradient(px2+TILE/2,py2+TILE/2,4,px2+TILE/2,py2+TILE/2,36);
+  grd.addColorStop(0,agent.color+'44');grd.addColorStop(1,'transparent');
+  ctx.fillStyle=grd;ctx.fillRect(px2-16,py2-16,TILE+32,TILE+32);
 
   // shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.beginPath();
-  ctx.ellipse(px + TILE/2, py + TILE - 4, 12, 5, 0, 0, Math.PI*2);
-  ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.4)';
+  ctx.beginPath();ctx.ellipse(px2+TILE/2,py2+TILE-4,11,4,0,0,Math.PI*2);ctx.fill();
 
-  // body (pixel-art style rounded rect)
-  const bob = Math.sin(t * 2.5 + agent.x) * 2;
-  ctx.fillStyle = agent.bg;
-  ctx.fillRect(px + 8, py + 10 + bob, 32, 28);
-  ctx.strokeStyle = agent.color;
-  ctx.lineWidth = 2;
-  ctx.strokeRect(px + 8, py + 10 + bob, 32, 28);
+  // KIMONO body
+  const bc=agent.color;
+  // robe bottom
+  ctx.fillStyle=bc+'cc';
+  ctx.fillRect(px2+11,py2+28+bob,26,14);
+  // robe body
+  ctx.fillStyle=bc;
+  ctx.fillRect(px2+12,py2+18+bob,24,18);
+  // collar
+  ctx.fillStyle='#f5e6d3';
+  ctx.fillRect(px2+19,py2+18+bob,10,8);
+  // obi (belt)
+  ctx.fillStyle='#8a4a2a';
+  ctx.fillRect(px2+11,py2+28+bob,26,4);
+  // sleeves
+  ctx.fillStyle=bc+'aa';
+  ctx.fillRect(px2+4,py2+20+bob,10,16);
+  ctx.fillRect(px2+34,py2+20+bob,10,16);
 
-  // head
-  ctx.fillStyle = agent.bg;
-  ctx.fillRect(px + 12, py + 4 + bob, 24, 20);
-  ctx.strokeStyle = agent.color;
-  ctx.lineWidth = 2;
-  ctx.strokeRect(px + 12, py + 4 + bob, 24, 20);
-
+  // HEAD
+  ctx.fillStyle='#f0d4a0';
+  ctx.fillRect(px2+14,py2+8+bob,20,18);
+  // hair
+  ctx.fillStyle='#1a0808';
+  ctx.fillRect(px2+13,py2+6+bob,22,9);
+  ctx.fillRect(px2+12,py2+8+bob,3,8);
+  ctx.fillRect(px2+33,py2+8+bob,3,8);
   // eyes
-  ctx.fillStyle = agent.color;
-  ctx.fillRect(px + 16, py + 9 + bob, 4, 4);
-  ctx.fillRect(px + 28, py + 9 + bob, 4, 4);
+  ctx.fillStyle='#1a0808';
+  ctx.fillRect(px2+17,py2+14+bob,4,3);
+  ctx.fillRect(px2+27,py2+14+bob,4,3);
+  // eye shine
+  ctx.fillStyle='#ffffff';
+  ctx.fillRect(px2+17,py2+14+bob,1,1);
+  ctx.fillRect(px2+27,py2+14+bob,1,1);
 
-  // emoji label
-  ctx.font = '13px serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(agent.emoji, px + TILE/2, py + bob - 2);
+  // EMOJI above
+  ctx.font='13px serif';ctx.textAlign='center';
+  ctx.fillText(agent.emoji,px2+TILE/2,py2+bob-4);
 
-  // name tag
-  const mem = memories[agent.id];
-  const hasMem = mem && mem.length > 0;
-  ctx.font = '9px "Press Start 2P"';
-  ctx.fillStyle = agent.color;
-  ctx.textAlign = 'center';
-  ctx.fillText(agent.name.split(' ')[0], px + TILE/2, py + bob - 14);
-  if (hasMem) {
-    ctx.font = '8px "Share Tech Mono"';
-    ctx.fillStyle = '#ffe94a';
-    ctx.fillText('● MEM', px + TILE/2, py + bob - 24);
+  // NAME TAG
+  const mem=memories[agent.id];
+  const hasMem=mem&&mem.length>0;
+  const nameStr=agent.nameEn.split(' ').slice(-1)[0]; // last name
+  ctx.fillStyle='rgba(14,8,8,0.82)';
+  const tw=ctx.measureText(nameStr).width+16;
+  ctx.fillRect(px2+TILE/2-tw/2,py2+bob-20,tw,14);
+  ctx.fillStyle=agent.color;
+  ctx.font='10px "Share Tech Mono"';ctx.textAlign='center';
+  ctx.fillText(nameStr,px2+TILE/2,py2+bob-9);
+  if(hasMem){
+    ctx.fillStyle='#f5d76e';ctx.font='7px "Share Tech Mono"';
+    ctx.fillText('記憶',px2+TILE/2,py2+bob-24);
   }
 
-  // nearness ring
-  if (nearbyAgent && nearbyAgent.id === agent.id) {
-    const ring = Math.sin(t * 4) * 3 + 28;
-    ctx.strokeStyle = agent.color + '88';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(px + TILE/2 - ring, py + TILE/2 - ring, ring*2, ring*2);
+  // proximity ring
+  if(nearbyAgent&&nearbyAgent.id===agent.id){
+    const r=28+Math.sin(t*4)*3;
+    ctx.strokeStyle=agent.color+'aa';ctx.lineWidth=1.5;
+    ctx.strokeRect(px2+TILE/2-r,py2+TILE/2-r,r*2,r*2);
   }
 }
 
-function drawPlayer(t) {
-  const px = player.x * TILE;
-  const py = player.y * TILE;
-  const bob = Math.sin(t * 4) * 1.5;
+// ─── PLAYER SPRITE ───
+function drawPlayer(t){
+  const px2=player.x*TILE, py2=player.y*TILE;
+  const bob=Math.sin(t*4)*1.5;
+  const isMoving=keys['ArrowLeft']||keys['ArrowRight']||keys['ArrowUp']||keys['ArrowDown']||
+                  keys['a']||keys['d']||keys['w']||keys['s']||keys['A']||keys['D']||keys['W']||keys['S'];
+  const legSwing=isMoving?Math.sin(t*8)*4:0;
 
   // shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.beginPath();
-  ctx.ellipse(px + TILE/2, py + TILE - 4, 10, 4, 0, 0, Math.PI*2);
-  ctx.fill();
+  ctx.fillStyle='rgba(0,0,0,0.4)';
+  ctx.beginPath();ctx.ellipse(px2+TILE/2,py2+TILE-4,10,4,0,0,Math.PI*2);ctx.fill();
 
-  // body
-  ctx.fillStyle = '#1a1030';
-  ctx.fillRect(px + 10, py + 12 + bob, 28, 24);
-  ctx.strokeStyle = '#7c6fff';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(px + 10, py + 12 + bob, 28, 24);
+  // legs
+  ctx.fillStyle='#2a1a5a';
+  ctx.fillRect(px2+13,py2+34+bob+legSwing,8,10);
+  ctx.fillRect(px2+27,py2+34+bob-legSwing,8,10);
+  // hakama (wide trousers)
+  ctx.fillStyle='#1a1040';
+  ctx.fillRect(px2+11,py2+28+bob,26,10);
+  // kimono (blue/navy — samurai)
+  ctx.fillStyle='#2a3a7a';
+  ctx.fillRect(px2+12,py2+18+bob,24,16);
+  // white collar
+  ctx.fillStyle='#f5e6d3';
+  ctx.fillRect(px2+19,py2+18+bob,10,7);
+  // obi
+  ctx.fillStyle='#c8a030';
+  ctx.fillRect(px2+11,py2+27+bob,26,4);
+  // sleeves
+  ctx.fillStyle='#2a3a7a';
+  ctx.fillRect(px2+3,py2+20+bob,11,14);
+  ctx.fillRect(px2+34,py2+20+bob,11,14);
+  // sword hint at side
+  ctx.fillStyle='#8a6a2a';
+  ctx.fillRect(px2+36,py2+24+bob,3,16);
+  ctx.fillStyle='#c8a040';
+  ctx.fillRect(px2+36,py2+24+bob,3,4);
 
-  // head
-  ctx.fillStyle = '#1a1030';
-  ctx.fillRect(px + 13, py + 5 + bob, 22, 18);
-  ctx.strokeStyle = '#9d8fff';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(px + 13, py + 5 + bob, 22, 18);
-
+  // HEAD
+  ctx.fillStyle='#f0d4a0';
+  ctx.fillRect(px2+14,py2+8+bob,20,18);
+  // hair
+  ctx.fillStyle='#1a0808';
+  ctx.fillRect(px2+13,py2+6+bob,22,8);
+  ctx.fillRect(px2+12,py2+7+bob,3,6);
+  ctx.fillRect(px2+33,py2+7+bob,3,6);
+  // topknot
+  ctx.fillRect(px2+21,py2+3+bob,6,6);
   // eyes
-  ctx.fillStyle = '#39ff7e';
-  ctx.fillRect(px + 17, py + 10 + bob, 3, 3);
-  ctx.fillRect(px + 28, py + 10 + bob, 3, 3);
+  ctx.fillStyle='#1a0808';
+  ctx.fillRect(px2+17,py2+14+bob,4,3);
+  ctx.fillRect(px2+27,py2+14+bob,4,3);
+  ctx.fillStyle='#fff';
+  ctx.fillRect(px2+17,py2+14+bob,1,1);
+  ctx.fillRect(px2+27,py2+14+bob,1,1);
 
-  // name tag
-  ctx.font = '9px "Press Start 2P"';
-  ctx.fillStyle = '#7c6fff';
-  ctx.textAlign = 'center';
-  ctx.fillText('YOU', px + TILE/2, py + bob - 4);
+  // YOU label
+  ctx.fillStyle='rgba(14,8,8,0.82)';ctx.fillRect(px2+10,py2+bob-16,28,13);
+  ctx.fillStyle='#e8c87c';ctx.font='9px "Share Tech Mono"';ctx.textAlign='center';
+  ctx.fillText(playerName.substring(0,6),px2+TILE/2,py2+bob-6);
 }
 
-function draw(t) {
-  ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
-
-  // draw map
-  for (let y = 0; y < ROWS; y++)
-    for (let x = 0; x < COLS; x++)
-      drawTile(x, y, MAP[y][x]);
-
-  // draw agents
-  AGENTS.forEach(a => drawAgent(a, t));
-
-  // draw player
+// ─── MAIN DRAW ───
+function draw(t){
+  ctx.clearRect(0,0,CW,CH);
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) drawTile(x,y,MAP[y][x],t);
+  AGENTS.forEach(a=>drawAgent(a,t));
   drawPlayer(t);
-
-  // scanlines effect
-  ctx.fillStyle = 'rgba(0,0,0,0.03)';
-  for (let y = 0; y < CANVAS_H; y += 3)
-    ctx.fillRect(0, y, CANVAS_W, 1);
+  // vignette
+  const vig=ctx.createRadialGradient(CW/2,CH/2,CW*0.3,CW/2,CH/2,CW*0.75);
+  vig.addColorStop(0,'transparent');vig.addColorStop(1,'rgba(0,0,0,0.35)');
+  ctx.fillStyle=vig;ctx.fillRect(0,0,CW,CH);
+  // scanlines
+  ctx.fillStyle='rgba(0,0,0,0.025)';
+  for(let y=0;y<CH;y+=3) ctx.fillRect(0,y,CW,1);
 }
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════
 // GAME LOOP
-// ─────────────────────────────────────────────────────────────────
-const SPEED = 5.0;
-const INTERACT_DIST = 2.2;
+// ═══════════════════════════════════════════
+const SPEED=5.0, INTERACT_DIST=2.2;
 
-function isWalkable(x, y) {
-  const tx = Math.floor(x), ty = Math.floor(y);
-  if (tx < 0 || ty < 0 || tx >= COLS || ty >= ROWS) return false;
-  const t = MAP[ty][tx];
-  if (t === 1 || t === 3 || t === 4) return false;
-  // agent collision
-  for (const a of AGENTS) {
-    if (Math.abs(a.x - x) < 0.7 && Math.abs(a.y - y) < 0.7) return false;
-  }
+function isWalkable(x,y){
+  const tx=Math.floor(x),ty=Math.floor(y);
+  if(tx<0||ty<0||tx>=COLS||ty>=ROWS) return false;
+  const t=MAP[ty][tx];
+  if(t===1||t===3||t===4||t===5||t===6) return false;
+  for(const a of AGENTS) if(Math.abs(a.x+0.5-x)<0.65&&Math.abs(a.y+0.5-y)<0.65) return false;
   return true;
 }
+function dist2(ax,ay,bx,by){return Math.sqrt((ax-bx)**2+(ay-by)**2);}
 
-function dist(ax, ay, bx, by) {
-  return Math.sqrt((ax-bx)**2 + (ay-by)**2);
-}
+function gameLoop(ts){
+  const dt=Math.min((ts-lastTime)/1000,0.05);
+  lastTime=ts;
+  const t=ts/1000;
 
-function gameLoop(ts) {
-  const dt = Math.min((ts - lastTime) / 1000, 0.05);
-  lastTime = ts;
-  const t = ts / 1000;
+  if(!chatOpen){
+    let dx=0,dy=0;
+    if(keys['ArrowLeft']||keys['a']||keys['A']) dx-=1;
+    if(keys['ArrowRight']||keys['d']||keys['D']) dx+=1;
+    if(keys['ArrowUp']||keys['w']||keys['W']) dy-=1;
+    if(keys['ArrowDown']||keys['s']||keys['S']) dy+=1;
+    if(dx!==0&&dy!==0){dx*=0.707;dy*=0.707;}
+    const nx=player.x+dx*SPEED*dt, ny=player.y+dy*SPEED*dt;
+    if(isWalkable(nx,player.y)) player.x=nx;
+    if(isWalkable(player.x,ny)) player.y=ny;
 
-  if (!chatOpen) {
-    let dx = 0, dy = 0;
-    if (keys['ArrowLeft']  || keys['a'] || keys['A']) dx -= 1;
-    if (keys['ArrowRight'] || keys['d'] || keys['D']) dx += 1;
-    if (keys['ArrowUp']    || keys['w'] || keys['W']) dy -= 1;
-    if (keys['ArrowDown']  || keys['s'] || keys['S']) dy += 1;
-
-    if (dx !== 0 && dy !== 0) { dx *= 0.707; dy *= 0.707; }
-
-    const nx = player.x + dx * SPEED * dt;
-    const ny = player.y + dy * SPEED * dt;
-    if (isWalkable(nx, player.y)) player.x = nx;
-    if (isWalkable(player.x, ny)) player.y = ny;
-
-    // detect nearby agent
-    nearbyAgent = null;
-    let closest = INTERACT_DIST;
-    for (const a of AGENTS) {
-      const d = dist(player.x, player.y, a.x + 0.5, a.y + 0.5);
-      if (d < closest) { closest = d; nearbyAgent = a; }
+    nearbyAgent=null;let closest=INTERACT_DIST;
+    for(const a of AGENTS){
+      const d=dist2(player.x,player.y,a.x+0.5,a.y+0.5);
+      if(d<closest){closest=d;nearbyAgent=a;}
     }
-
-    const popup = document.getElementById('proximity-popup');
-    if (nearbyAgent) {
-      popup.style.display = 'block';
-      popup.textContent = `Press E to talk to ${nearbyAgent.name}`;
-    } else {
-      popup.style.display = 'none';
-    }
+    const pop=document.getElementById('proximity-popup');
+    if(nearbyAgent){
+      pop.style.display='block';
+      pop.textContent=`E → speak with ${nearbyAgent.nameEn}`;
+    } else pop.style.display='none';
   }
 
   draw(t);
   requestAnimationFrame(gameLoop);
 }
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════
 // INPUT
-// ─────────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => {
-  keys[e.key] = true;
-  if (e.key === 'e' || e.key === 'E') {
-    if (!chatOpen && nearbyAgent) openChat(nearbyAgent);
-    else if (chatOpen) closeChat();
+// ═══════════════════════════════════════════
+function handleKeyDown(e){
+  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)&&!chatOpen) e.preventDefault();
+  keys[e.key]=true;
+  if((e.key==='e'||e.key==='E')&&!chatOpen&&nearbyAgent) openChat(nearbyAgent);
+  else if((e.key==='e'||e.key==='E')&&chatOpen) closeChat();
+  if(e.key==='Escape') closeChat();
+  if(e.key==='Enter'&&chatOpen){e.preventDefault();sendMessage();}
+}
+function handleKeyUp(e){keys[e.key]=false;}
+document.addEventListener('keydown',handleKeyDown);
+document.addEventListener('keyup',handleKeyUp);
+canvas.addEventListener('click',(e)=>{
+  if(!chatOpen){
+    canvas.focus();
+    const rect=canvas.getBoundingClientRect();
+    const sx=CW/rect.width,sy=CH/rect.height;
+    const tx=(e.clientX-rect.left)*sx/TILE;
+    const ty=(e.clientY-rect.top)*sy/TILE;
+    // check agent click
+    for(const a of AGENTS){
+      if(Math.abs(a.x+0.5-tx)<1&&Math.abs(a.y+0.5-ty)<1){openChat(a);return;}
+    }
+    if(isWalkable(tx,ty)){player.x=tx;player.y=ty;}
   }
-  if (e.key === 'Escape') closeChat();
-  if (e.key === 'Enter' && chatOpen) sendMessage();
 });
-document.addEventListener('keyup', e => { keys[e.key] = false; });
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════
 // CHAT
-// ─────────────────────────────────────────────────────────────────
-function openChat(agent) {
-  activeAgent = agent;
-  chatOpen = true;
-  const panel = document.getElementById('chat-panel');
+// ═══════════════════════════════════════════
+function getGreeting(agent){
+  const g={
+    musashi:'*studies you with piercing eyes* You have sought me out. That already shows some resolve.',
+    basho:'*looks up from a scroll* Ah... a visitor arrives, like rain finding a still pond.',
+    lady_murasaki:'*sets down her brush* How curious. A traveler in this world between worlds. Welcome.',
+    oda:'*turns sharply* You have my attention. Do not waste it.',
+    sen_no_rikyu:'*gestures gently toward the garden* Please. There is tea. And time. Sit with me.',
+  };
+  return g[agent.id]||'You have arrived. Good.';
+}
+
+function openChat(agent){
+  activeAgent=agent;chatOpen=true;
+  const panel=document.getElementById('chat-panel');
   panel.classList.remove('hidden');
+  document.getElementById('chat-avatar').textContent=agent.emoji;
+  document.getElementById('chat-avatar').style.background=agent.bg;
+  document.getElementById('chat-avatar').style.borderColor=agent.color;
+  document.getElementById('chat-name').textContent=agent.name+' — '+agent.nameEn;
+  document.getElementById('chat-name').style.color=agent.color;
+  document.getElementById('chat-role').textContent=agent.role;
 
-  document.getElementById('chat-avatar').textContent = agent.emoji;
-  document.getElementById('chat-avatar').style.background = agent.bg;
-  document.getElementById('chat-avatar').style.border = `2px solid ${agent.color}`;
-  document.getElementById('chat-name').textContent = agent.name;
-  document.getElementById('chat-name').style.color = agent.color;
-  document.getElementById('chat-role').textContent = agent.role;
-
-  // render existing memory
-  const msgs = document.getElementById('chat-messages');
-  msgs.innerHTML = '<div class="typing-indicator" id="typing"><span></span><span></span><span></span></div>';
-
-  const history = memories[agent.id] || [];
-  history.forEach(m => appendBubble(m.role === 'user' ? 'user' : 'agent', m.content, false));
-
-  if (history.length === 0) {
-    // greeting
-    appendBubble('agent', `*${agent.name} turns to look at you* ${getGreeting(agent)}`, false);
-  }
+  const msgs=document.getElementById('chat-messages');
+  msgs.innerHTML='<div class="typing-indicator" id="typing"><span></span><span></span><span></span></div>';
+  (memories[agent.id]||[]).forEach(m=>appendBubble(m.role==='user'?'user':'agent',m.content,false));
+  if(!memories[agent.id]||memories[agent.id].length===0)
+    appendBubble('agent',getGreeting(agent),false);
 
   document.getElementById('chat-input').focus();
-  document.getElementById('topbar-hint').textContent = 'ESC or E to close chat';
+  document.getElementById('topbar-hint').textContent='ESC to close · Enter to send';
   resizeCanvas();
 }
 
-function getGreeting(agent) {
-  const greetings = {
-    ada: 'Ah, a visitor in this curious digital realm! How extraordinary.',
-    turing: 'Oh. Hello. I was just... thinking about machines.',
-    hypatia: 'Welcome, seeker. What knowledge do you pursue today?',
-    shannon: 'Well hello there! I was just calculating some entropy. Fun stuff.',
-    dijkstra: 'I hope you have not come here with a poorly structured question.',
-  };
-  return greetings[agent.id] || 'Hello.';
-}
-
-function closeChat() {
-  chatOpen = false;
+function closeChat(){
+  chatOpen=false;
   document.getElementById('chat-panel').classList.add('hidden');
-  document.getElementById('proximity-popup').style.display = 'none';
-  document.getElementById('topbar-hint').textContent = 'walk to an agent → press E';
-  activeAgent = null;
+  document.getElementById('proximity-popup').style.display='none';
+  document.getElementById('topbar-hint').textContent='walk to an agent → press E';
+  activeAgent=null;
+  canvas.focus();
   resizeCanvas();
 }
 
-function appendBubble(role, text, scroll=true) {
-  const msgs = document.getElementById('chat-messages');
-  const typing = document.getElementById('typing');
-
-  const div = document.createElement('div');
-  div.className = `msg ${role}`;
-
-  const label = document.createElement('div');
-  label.className = 'msg-label';
-  label.textContent = role === 'user' ? playerName : (activeAgent?.name || 'AGENT');
-
-  const bubble = document.createElement('div');
-  bubble.className = 'msg-bubble';
-  bubble.textContent = text;
-
-  div.appendChild(label);
-  div.appendChild(bubble);
-  msgs.insertBefore(div, typing);
-
-  if (scroll) msgs.scrollTop = msgs.scrollHeight;
+function appendBubble(role,text,scroll=true){
+  const msgs=document.getElementById('chat-messages');
+  const typing=document.getElementById('typing');
+  const div=document.createElement('div');div.className=`msg ${role}`;
+  const label=document.createElement('div');label.className='msg-label';
+  label.textContent=role==='user'?playerName:(activeAgent?.nameEn||'AGENT');
+  const bubble=document.createElement('div');bubble.className='msg-bubble';
+  bubble.textContent=text;
+  div.appendChild(label);div.appendChild(bubble);
+  msgs.insertBefore(div,typing);
+  if(scroll) msgs.scrollTop=msgs.scrollHeight;
 }
 
-async function sendMessage() {
-  if (isThinking || !activeAgent) return;
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-
-  if (!apiKey) {
-    appendBubble('agent', '⚠ No API key set. Please reload and enter your Anthropic API key.');
-    return;
-  }
-
-  appendBubble('user', text);
-
-  if (!memories[activeAgent.id]) memories[activeAgent.id] = [];
-  memories[activeAgent.id].push({ role: 'user', content: text });
-
-  // show typing
-  isThinking = true;
-  document.getElementById('send-btn').disabled = true;
-  document.getElementById('typing').style.display = 'flex';
-  document.getElementById('chat-messages').scrollTop = 999999;
-
-  const systemPrompt = activeAgent.system.replace('{{player}}', playerName);
-
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        system: systemPrompt,
-        messages: memories[activeAgent.id],
-      })
+async function sendMessage(){
+  if(isThinking||!activeAgent) return;
+  const input=document.getElementById('chat-input');
+  const text=input.value.trim();if(!text) return;
+  input.value='';
+  if(!apiKey){appendBubble('agent','⚠ No API key. Please reload and enter your Anthropic API key.');return;}
+  appendBubble('user',text);
+  if(!memories[activeAgent.id]) memories[activeAgent.id]=[];
+  memories[activeAgent.id].push({role:'user',content:text});
+  isThinking=true;
+  document.getElementById('send-btn').disabled=true;
+  document.getElementById('typing').style.display='flex';
+  document.getElementById('chat-messages').scrollTop=999999;
+  const sys=activeAgent.system.replace('{{player}}',playerName);
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,
+        'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:sys,messages:memories[activeAgent.id]})
     });
-
-    const data = await response.json();
-
-    if (data.error) {
-      appendBubble('agent', `⚠ API Error: ${data.error.message}`);
-    } else {
-      const reply = data.content?.[0]?.text || '...';
-      memories[activeAgent.id].push({ role: 'assistant', content: reply });
-      appendBubble('agent', reply);
+    const data=await res.json();
+    if(data.error){appendBubble('agent',`⚠ ${data.error.message}`);}
+    else{
+      const reply=data.content?.[0]?.text||'...';
+      memories[activeAgent.id].push({role:'assistant',content:reply});
+      appendBubble('agent',reply);
     }
-  } catch (err) {
-    appendBubble('agent', `⚠ Network error: ${err.message}`);
-  }
-
-  document.getElementById('typing').style.display = 'none';
-  document.getElementById('send-btn').disabled = false;
-  isThinking = false;
+  }catch(err){appendBubble('agent',`⚠ Network error: ${err.message}`);}
+  document.getElementById('typing').style.display='none';
+  document.getElementById('send-btn').disabled=false;
+  isThinking=false;
   input.focus();
 }
 
-// ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════
 // LOGIN
-// ─────────────────────────────────────────────────────────────────
-function startGame() {
-  const nameInput = document.getElementById('username-input').value.trim();
-  const keyInput = document.getElementById('apikey-input').value.trim();
-
-  if (!nameInput) {
-    document.getElementById('username-input').style.borderColor = '#ff6f91';
-    document.getElementById('username-input').focus();
-    return;
-  }
-
-  playerName = nameInput.toUpperCase();
-  apiKey = keyInput;
-
+// ═══════════════════════════════════════════
+function startGame(){
+  const n=document.getElementById('username-input').value.trim();
+  const k=document.getElementById('apikey-input').value.trim();
+  if(!n){document.getElementById('username-input').style.borderColor='#c8607a';document.getElementById('username-input').focus();return;}
+  playerName=n.toUpperCase();apiKey=k;
   document.getElementById('login-screen').classList.remove('active');
   document.getElementById('game-screen').classList.add('active');
-  document.getElementById('display-name').textContent = playerName;
-
-  // update URL without reload (skip in sandboxed contexts like iframes)
-  try {
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.set('user', nameInput);
-    window.history.replaceState({}, '', newUrl.toString());
-  } catch (e) { /* sandboxed iframe — ignore */ }
-
+  document.getElementById('display-name').textContent=playerName;
+  try{const u=new URL(window.location.href);u.searchParams.set('user',n);window.history.replaceState({},'',u.toString());}catch(e){}
   resizeCanvas();
-  lastTime = performance.now();
+  canvas.setAttribute('tabindex','0');canvas.focus();
+  lastTime=performance.now();
   requestAnimationFrame(gameLoop);
 }
-
-// Enter key on login
-document.getElementById('username-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('apikey-input').focus();
-});
-document.getElementById('apikey-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') startGame();
-});
-
-window.addEventListener('resize', resizeCanvas);
+document.getElementById('username-input').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('apikey-input').focus();});
+document.getElementById('apikey-input').addEventListener('keydown',e=>{if(e.key==='Enter')startGame();});
+window.addEventListener('resize',resizeCanvas);
 </script>
 </body>
 </html>
