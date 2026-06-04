@@ -376,7 +376,7 @@ function drawTree(px2,py2,t){
   // sakura blossoms — layered circles
   const bob=Math.sin(t*0.8+px2*0.01)*1.5;
   const cols=['#f7a8c0','#f5c0d0','#e88aa8','#f7b8c8','#e070a0'];
-  const blobs=[[0,0,18],[−6,−8,13],[8,−6,14],[−10,4,11],[10,2,12],[0,−14,10]];
+  const blobs=[[0,0,18],[-6,-8,13],[8,-6,14],[-10,4,11],[10,2,12],[0,-14,10]];
   for(let i=0;i<blobs.length;i++){
     const[bx,by,br]=blobs[i];
     ctx.fillStyle=cols[i%cols.length];
@@ -710,6 +710,26 @@ function appendBubble(role,text,scroll=true){
   if(scroll) msgs.scrollTop=msgs.scrollHeight;
 }
 
+function friendlyError(err){
+  const t=err.type||'';const m=err.message||'Unknown error';
+  if(t==='overloaded_error'||m.includes('overload')) return 'Anthropic servers are busy. Try again in a moment.';
+  if(t==='authentication_error') return 'Invalid API key. Check your key at console.anthropic.com';
+  if(t==='rate_limit_error') return 'Rate limit hit. Wait a few seconds and try again.';
+  if(t==='invalid_request_error') return 'Request error: '+m;
+  return m;
+}
+function appendStatusMsg(text){
+  const msgs=document.getElementById('chat-messages');
+  const typing=document.getElementById('typing');
+  // remove previous status
+  document.querySelectorAll('.status-msg').forEach(el=>el.remove());
+  const div=document.createElement('div');
+  div.className='status-msg';
+  div.style.cssText='align-self:center;font-size:11px;color:var(--dim);font-style:italic;padding:4px 0;';
+  div.textContent=text;
+  msgs.insertBefore(div,typing);
+  msgs.scrollTop=999999;
+}
 async function sendMessage(){
   if(isThinking||!activeAgent) return;
   const input=document.getElementById('chat-input');
@@ -724,21 +744,43 @@ async function sendMessage(){
   document.getElementById('typing').style.display='flex';
   document.getElementById('chat-messages').scrollTop=999999;
   const sys=activeAgent.system.replace('{{player}}',playerName);
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,
-        'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:sys,messages:memories[activeAgent.id]})
-    });
-    const data=await res.json();
-    if(data.error){appendBubble('agent',`⚠ ${data.error.message}`);}
-    else{
+  const MAX_RETRIES=3;
+  let attempt=0, lastErr='';
+  while(attempt<MAX_RETRIES){
+    attempt++;
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,
+          'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:sys,messages:memories[activeAgent.id]})
+      });
+      const data=await res.json();
+      if(data.error){
+        const code=data.error.type||'';
+        // overloaded or rate limit — wait and retry
+        if((code==='overloaded_error'||res.status===529||res.status===529||res.status===429)&&attempt<MAX_RETRIES){
+          appendStatusMsg(`*servers busy, retrying ${attempt}/${MAX_RETRIES}...*`);
+          await new Promise(r=>setTimeout(r,1500*attempt));
+          continue;
+        }
+        lastErr=friendlyError(data.error);
+        break;
+      }
       const reply=data.content?.[0]?.text||'...';
       memories[activeAgent.id].push({role:'assistant',content:reply});
       appendBubble('agent',reply);
+      lastErr='';
+      break;
+    }catch(err){
+      lastErr='Network error — check your connection.';
+      if(attempt<MAX_RETRIES){ await new Promise(r=>setTimeout(r,1000*attempt)); continue; }
+      break;
     }
-  }catch(err){appendBubble('agent',`⚠ Network error: ${err.message}`);}
+  }
+  if(lastErr) appendBubble('agent','⚠ '+lastErr);
+  // remove any status messages
+  document.querySelectorAll('.status-msg').forEach(el=>el.remove());
   document.getElementById('typing').style.display='none';
   document.getElementById('send-btn').disabled=false;
   isThinking=false;
